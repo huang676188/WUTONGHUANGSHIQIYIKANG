@@ -14,7 +14,7 @@ xml_path = '../../models/universal_robots_ur5e/scene.xml' #xml file (assumes thi
 #################################
 ## USER CODE: Set simulation parameters here
 #################################
-simend = 180 #simulation time (second)
+simend = 1000 #simulation time (second)
 print_camera_config = 0 #set to 1 to print camera config
                         #this is useful for initializing view of the model)
 #################################
@@ -184,11 +184,16 @@ LINE_RGBA = np.array([1.0, 0.0, 0.0, 1.0])
 ######################################
 strokes = [
     # "大" 字
-    [np.array([-0.2, 0.5]), np.array([-0.35, 0.3])],  # 撇
-    [np.array([-0.2, 0.5]), np.array([-0.05, 0.3])],  # 捺
-    [np.array([-0.3, 0.4]), np.array([-0.1, 0.4])],   # 横
-    # "一" 字
-    [np.array([0.1, 0.45]), np.array([0.4, 0.45])]     # 横
+    [np.array([-0.3, 0.5]), np.array([0.3, 0.5])],  # 横
+    [np.array([0.3, 0.5]), np.array([0.3, 0.3])] ,  
+    [np.array([0.3, 0.3]), np.array([-0.3, 0.3])],# 竖折钩
+    [np.array([-0.3, 0.3]), np.array([-0.4, 0.2])],  # 斜撇
+    [np.array([-0.3, 0.3]), np.array([-0.3, 0.2])],  # 点
+    # "同" 字
+    [np.array([0.1, 0.5]), np.array([0.1, 0.2])],   # 竖
+    [np.array([0.1, 0.2]), np.array([0.3, 0.2])],
+    [np.array([0.3, 0.2]), np.array([0.3, 0.4])],  # 横折钩
+    [np.array([0.1, 0.4]), np.array([0.3, 0.4])]      # 横
 ]
 
 # 构建完整轨迹：包含抬笔、落笔、书写、再抬笔
@@ -251,7 +256,7 @@ final_q = np.array([0.0,-2.32,-1.38,-2.45,1.57,0.0])
 while not glfw.window_should_close(window):
     time_prev = data.time
 
-    while (data.time - time_prev < 1.0/60.0):
+    while (data.time - time_prev < 1.0/50):
         # Store trajectory
         mj_end_eff_pos = data.site_xpos[0]
         if (mj_end_eff_pos[2] < 0.1):
@@ -298,7 +303,7 @@ while not glfw.window_should_close(window):
         else:
             data.ctrl[:] = final_q
         mj.mj_step(model, data)
-        data.time += 0.02
+        data.time += 0.01
 
     if (data.time>=simend):
         break
