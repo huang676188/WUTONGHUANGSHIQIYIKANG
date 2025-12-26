@@ -182,13 +182,13 @@ LINE_RGBA = np.array([1.0, 0.0, 0.0, 1.0])
 ######################################
 ## USER CODE STARTS HERE
 ######################################
-strokes = [
-    # "大" 字
-    [np.array([-0.2, 0.5]), np.array([-0.35, 0.3])],  # 撇
-    [np.array([-0.2, 0.5]), np.array([-0.05, 0.3])],  # 捺
-    [np.array([-0.3, 0.4]), np.array([-0.1, 0.4])],   # 横
-    # "一" 字
-    [np.array([0.1, 0.45]), np.array([0.4, 0.45])]     # 横
+strokes = [[np.array([0.2053, 0.3497]), np.array([0.219, 0.3337]), np.array([0.2317, 0.2797])],
+[np.array([0.2163, 0.3517]), np.array([0.218, 0.3493]), np.array([0.231, 0.346]), np.array([0.298, 0.3607]), np.array([0.3137, 0.36]), np.array([0.325, 0.3493]), np.array([0.314, 0.318]), np.array([0.3053, 0.3147])],
+[np.array([0.2387, 0.286]), np.array([0.242, 0.2907]), np.array([0.2997, 0.302]), np.array([0.317, 0.3027]), np.array([0.325, 0.3007])],
+[np.array([0.2037, 0.2463]), np.array([0.2167, 0.2437]), np.array([0.2303, 0.2443]), np.array([0.324, 0.2623]), np.array([0.3397, 0.262])],
+[np.array([0.153, 0.187]), np.array([0.1713, 0.1837]), np.array([0.221, 0.192]), np.array([0.3607, 0.2067]), np.array([0.3777, 0.204]), np.array([0.39, 0.1997])],
+[np.array([0.2523, 0.238]), np.array([0.2653, 0.2293]), np.array([0.2653, 0.2233]), np.array([0.2597, 0.189]), np.array([0.2457, 0.1553]), np.array([0.2363, 0.1423]), np.array([0.223, 0.129]), np.array([0.1987, 0.1147]), np.array([0.174, 0.105]), np.array([0.1653, 0.1037])],
+[np.array([0.2717, 0.1887]), np.array([0.2757, 0.1807]), np.array([0.279, 0.179]), np.array([0.297, 0.1573]), np.array([0.3193, 0.135]), np.array([0.3423, 0.116]), np.array([0.362, 0.109]), np.array([0.4077, 0.1003])]
 ]
 
 # 构建完整轨迹：包含抬笔、落笔、书写、再抬笔
@@ -196,24 +196,31 @@ trajectory = []
 z_write = 0.1   # 书写高度
 z_lift = 0.2    # 抬笔高度
 
-for i, (start, end) in enumerate(strokes):
-    sx, sy = start
-    ex, ey = end
-    
+for i, stroke in enumerate(strokes):
+    # 每个 stroke 为可变长度的点列表：[(x0,y0), (x1,y1), ..., (xn,yn)]
+    if not stroke:
+        continue
+
+    sx, sy = stroke[0]
+    ex, ey = stroke[-1]
+
     if i == 0:
         # 第一笔：从初始位置抬着走到起始点上方
         trajectory.append(np.array([sx, sy, z_lift]))   # 移动到起始点上方（抬笔状态）
     else:
         # 从上一笔结束点上方（z=0.2）移动到当前笔画起始点上方
-        prev_end = strokes[i-1][1]
-        trajectory.append(np.array([prev_end[0], prev_end[1], z_lift]))
-        trajectory.append(np.array([sx, sy, z_lift]))
-    
-    # 落笔
+        prev_end = strokes[i-1][-1]
+        trajectory.append(np.array([prev_end[0], prev_end[1], z_write]))
+        trajectory.append(np.array([sx, sy, z_write]))
+
+    # 落笔：在第一个点处落笔
     trajectory.append(np.array([sx, sy, z_write]))
-    # 书写
-    trajectory.append(np.array([ex, ey, z_write]))
-    # 抬笔
+
+    # 书写：依次经过子列表中间的所有点，直到最后一个点
+    for px, py in stroke[1:]:
+        trajectory.append(np.array([px, py, z_write]))
+
+    # 抬笔：在最后一个点上抬起
     trajectory.append(np.array([ex, ey, z_lift]))
 
 # 添加最终停靠点（可选）
@@ -254,7 +261,10 @@ while not glfw.window_should_close(window):
     while (data.time - time_prev < 1.0/60.0):
         # Store trajectory
         mj_end_eff_pos = data.site_xpos[0]
-        if (mj_end_eff_pos[2] < 0.1):
+        # Pen-down detection: allow small tolerance around z_write to avoid false breaks
+        # Use <= z_write + tol instead of hardcoded 0.1 and strict <
+        tol = 1e-3
+        if (mj_end_eff_pos[2] <= z_write + tol):
             traj_points.append(mj_end_eff_pos.copy())
         if len(traj_points) > MAX_TRAJ:
             traj_points.pop(0)
