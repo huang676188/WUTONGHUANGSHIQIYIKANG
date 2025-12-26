@@ -182,6 +182,63 @@ LINE_RGBA = np.array([1.0, 0.0, 0.0, 1.0])
 ######################################
 ## USER CODE STARTS HERE
 ######################################
+strokes = [
+    # "大" 字
+    [np.array([-0.2, 0.5]), np.array([-0.35, 0.3])],  # 撇
+    [np.array([-0.2, 0.5]), np.array([-0.05, 0.3])],  # 捺
+    [np.array([-0.3, 0.4]), np.array([-0.1, 0.4])],   # 横
+    # "一" 字
+    [np.array([0.1, 0.45]), np.array([0.4, 0.45])]     # 横
+]
+
+# 构建完整轨迹：包含抬笔、落笔、书写、再抬笔
+trajectory = []
+z_write = 0.1   # 书写高度
+z_lift = 0.2    # 抬笔高度
+
+for i, (start, end) in enumerate(strokes):
+    sx, sy = start
+    ex, ey = end
+    
+    if i == 0:
+        # 第一笔：从初始位置抬着走到起始点上方
+        trajectory.append(np.array([sx, sy, z_lift]))   # 移动到起始点上方（抬笔状态）
+    else:
+        # 从上一笔结束点上方（z=0.2）移动到当前笔画起始点上方
+        prev_end = strokes[i-1][1]
+        trajectory.append(np.array([prev_end[0], prev_end[1], z_lift]))
+        trajectory.append(np.array([sx, sy, z_lift]))
+    
+    # 落笔
+    trajectory.append(np.array([sx, sy, z_write]))
+    # 书写
+    trajectory.append(np.array([ex, ey, z_write]))
+    # 抬笔
+    trajectory.append(np.array([ex, ey, z_lift]))
+
+# 添加最终停靠点（可选）
+final_q = np.array([0.0, -2.32, -1.38, -2.45, 1.57, 0.0])
+
+# 时间参数
+dt_control = 0.02  # 与 data.time += 0.02 一致
+speed = 0.1        # m/s，末端移动速度
+current_traj_index = 0
+t_start_segment = 0.0
+
+# 预计算每段所需时间
+segment_times = []
+segment_points = []
+
+for i in range(len(trajectory) - 1):
+    p0 = trajectory[i]
+    p1 = trajectory[i+1]
+    dist = np.linalg.norm(p1 - p0)
+    t_seg = dist / speed if dist > 1e-6 else 0.1  # 至少 0.1s 避免除零
+    segment_times.append(t_seg)
+    segment_points.append((p0, p1))
+
+total_segments = len(segment_points)
+
 point_A = np.array([0.3, 0.1, 0.1])
 point_B = np.array([0.6, 0.6, 0.1])
 duration_A = 1
@@ -208,10 +265,25 @@ while not glfw.window_should_close(window):
         ######################################
         ## USER CODE STARTS HERE
         ######################################
-        if data.time < duration_A:
-            X_ref = point_A
+        if current_traj_index >= total_segments:
+            X_ref = np.array([0.0, 0.0, 0.2])  # 悬停
         else:
-            X_ref = point_B  # Desired end-effector position, this line is just an example
+            p0, p1 = segment_points[current_traj_index]
+            t_elapsed = data.time- t_start_segment
+            t_seg = segment_times[current_traj_index]
+
+            if t_elapsed >= t_seg:
+                # 进入下一段
+                current_traj_index += 1
+                t_start_segment = data.time
+                if current_traj_index < total_segments:
+                    p0, p1 = segment_points[current_traj_index]
+                    t_elapsed = 0.0
+                    t_seg = segment_times[current_traj_index]
+
+            # 线性插值
+            alpha = min(1.0, t_elapsed / t_seg) if t_seg > 0 else 1.0
+            X_ref = (1 - alpha) * p0 + alpha * p1
         
         ######################################
         ## USER CODE ENDS HERE
