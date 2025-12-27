@@ -14,7 +14,7 @@ xml_path = '../../models/universal_robots_ur5e/scene.xml' #xml file (assumes thi
 #################################
 ## USER CODE: Set simulation parameters here
 #################################
-simend = 180 #simulation time (second)
+simend = 114514 #simulation time (second)
 print_camera_config = 0 #set to 1 to print camera config
                         #this is useful for initializing view of the model)
 #################################
@@ -210,8 +210,8 @@ for i, stroke in enumerate(strokes):
     else:
         # 从上一笔结束点上方（z=0.2）移动到当前笔画起始点上方
         prev_end = strokes[i-1][-1]
-        trajectory.append(np.array([prev_end[0], prev_end[1], z_write]))
-        trajectory.append(np.array([sx, sy, z_write]))
+        trajectory.append(np.array([prev_end[0], prev_end[1], z_lift]))
+        trajectory.append(np.array([sx, sy, z_lift]))
 
     # 落笔：在第一个点处落笔
     trajectory.append(np.array([sx, sy, z_write]))
@@ -228,7 +228,7 @@ final_q = np.array([0.0, -2.32, -1.38, -2.45, 1.57, 0.0])
 
 # 时间参数
 dt_control = 0.02  # 与 data.time += 0.02 一致
-speed = 0.1        # m/s，末端移动速度
+speed = 0.05        # m/s，末端移动速度
 current_traj_index = 0
 t_start_segment = 0.0
 
@@ -263,7 +263,7 @@ while not glfw.window_should_close(window):
         mj_end_eff_pos = data.site_xpos[0]
         # Pen-down detection: allow small tolerance around z_write to avoid false breaks
         # Use <= z_write + tol instead of hardcoded 0.1 and strict <
-        tol = 1e-3
+        tol = 1e-5
         if (mj_end_eff_pos[2] <= z_write + tol):
             traj_points.append(mj_end_eff_pos.copy())
         if len(traj_points) > MAX_TRAJ:
@@ -334,16 +334,11 @@ while not glfw.window_should_close(window):
         geom = scene.geoms[scene.ngeom]
         scene.ngeom += 1
         
-        p1 = traj_points[j-1]
-        p2 = traj_points[j]
-        direction = p2 - p1
-        midpoint = (p1 + p2) / 2.0
-        
         # Configure this geom as a line
         geom.type = mj.mjtGeom.mjGEOM_SPHERE  # Use sphere for endpoints
         geom.rgba[:] = LINE_RGBA
         geom.size[:] = np.array([0.002, 0.002, 0.002])
-        geom.pos[:] = midpoint
+        geom.pos[:] = traj_points[j]
         geom.mat[:] = np.eye(3)  # no rotation
         geom.dataid = -1
         geom.segid = -1
