@@ -170,10 +170,7 @@ init_controller(model,data)
 # Set the controller
 mj.set_mjcb_control(controller)
 
-# Initialize joint configuration
-init_qpos = np.array([-1.6353559, -1.28588984, 2.14838487, -2.61087434, -1.5903009, -0.06818645])
-data.qpos[:] = init_qpos
-cur_q_pos = init_qpos.copy()
+
 
 traj_points = []
 MAX_TRAJ = 5e5  # Maximum number of trajectory points to store
@@ -182,19 +179,42 @@ LINE_RGBA = np.array([1.0, 0.0, 0.0, 1.0])
 ######################################
 ## USER CODE STARTS HERE
 ######################################
-strokes = [[np.array([0.2053, 0.3497]), np.array([0.219, 0.3337]), np.array([0.2317, 0.2797])],
-[np.array([0.2163, 0.3517]), np.array([0.218, 0.3493]), np.array([0.231, 0.346]), np.array([0.298, 0.3607]), np.array([0.3137, 0.36]), np.array([0.325, 0.3493]), np.array([0.314, 0.318]), np.array([0.3053, 0.3147])],
-[np.array([0.2387, 0.286]), np.array([0.242, 0.2907]), np.array([0.2997, 0.302]), np.array([0.317, 0.3027]), np.array([0.325, 0.3007])],
-[np.array([0.2037, 0.2463]), np.array([0.2167, 0.2437]), np.array([0.2303, 0.2443]), np.array([0.324, 0.2623]), np.array([0.3397, 0.262])],
-[np.array([0.153, 0.187]), np.array([0.1713, 0.1837]), np.array([0.221, 0.192]), np.array([0.3607, 0.2067]), np.array([0.3777, 0.204]), np.array([0.39, 0.1997])],
-[np.array([0.2523, 0.238]), np.array([0.2653, 0.2293]), np.array([0.2653, 0.2233]), np.array([0.2597, 0.189]), np.array([0.2457, 0.1553]), np.array([0.2363, 0.1423]), np.array([0.223, 0.129]), np.array([0.1987, 0.1147]), np.array([0.174, 0.105]), np.array([0.1653, 0.1037])],
-[np.array([0.2717, 0.1887]), np.array([0.2757, 0.1807]), np.array([0.279, 0.179]), np.array([0.297, 0.1573]), np.array([0.3193, 0.135]), np.array([0.3423, 0.116]), np.array([0.362, 0.109]), np.array([0.4077, 0.1003])]
+strokes = [[np.array([-0.3947, 0.3497]), np.array([-0.381, 0.3337]), np.array([-0.3683, 0.2797])],
+[np.array([-0.3837, 0.3517]), np.array([-0.382, 0.3493]), np.array([-0.369, 0.346]), np.array([-0.302, 0.3607]), np.array([-0.2863, 0.36]), np.array([-0.275, 0.3493]), np.array([-0.286, 0.318]), np.array([-0.2947, 0.3147])],
+[np.array([-0.3613, 0.286]), np.array([-0.358, 0.2907]), np.array([-0.3003, 0.302]), np.array([-0.283, 0.3027]), np.array([-0.275, 0.3007])],
+[np.array([-0.3963, 0.2463]), np.array([-0.3833, 0.2437]), np.array([-0.3697, 0.2443]), np.array([-0.276, 0.2623]), np.array([-0.2603, 0.262])],
+[np.array([-0.447, 0.187]), np.array([-0.4287, 0.1837]), np.array([-0.379, 0.192]), np.array([-0.2393, 0.2067]), np.array([-0.2223, 0.204]), np.array([-0.21, 0.1997])],
+[np.array([-0.3477, 0.238]), np.array([-0.3347, 0.2293]), np.array([-0.3347, 0.2233]), np.array([-0.3403, 0.189]), np.array([-0.3543, 0.1553]), np.array([-0.3637, 0.1423]), np.array([-0.377, 0.129]), np.array([-0.4013, 0.1147]), np.array([-0.426, 0.105]), np.array([-0.4347, 0.1037])],
+[np.array([-0.3283, 0.1887]), np.array([-0.3243, 0.1807]), np.array([-0.321, 0.179]), np.array([-0.303, 0.1573]), np.array([-0.2807, 0.135]), np.array([-0.2577, 0.116]), np.array([-0.238, 0.109]), np.array([-0.1923, 0.1003])],
+[np.array([-0.1253, 0.3497]), np.array([-0.1143, 0.3377]), np.array([-0.1113, 0.328]), np.array([-0.1097, 0.2737]), np.array([-0.117, 0.176]), np.array([-0.124, 0.1427]), np.array([-0.1243, 0.121])],
+[np.array([-0.1027, 0.343]), np.array([-0.095, 0.3377]), np.array([0.036, 0.3613]), np.array([0.048, 0.357]), np.array([0.0573, 0.3473]), np.array([0.0567, 0.3273]), np.array([0.0637, 0.17]), np.array([0.0627, 0.1307]), np.array([0.057, 0.1167]), np.array([0.0543, 0.1167]), np.array([0.0377, 0.1197]), np.array([0.0083, 0.1307])],
+[np.array([-0.0743, 0.2923]), np.array([-0.071, 0.2907]), np.array([-0.0537, 0.2903]), np.array([-0.0083, 0.301]), np.array([0.0093, 0.3013])],
+[np.array([-0.08, 0.2477]), np.array([-0.0717, 0.2403]), np.array([-0.0697, 0.2353]), np.array([-0.0597, 0.181])],
+[np.array([-0.0613, 0.24]), np.array([-0.0557, 0.2443]), np.array([-0.0197, 0.253]), np.array([-0.0127, 0.2543]), np.array([-0.0047, 0.2517]), np.array([0.0027, 0.2443]), np.array([-0.0057, 0.2163]), np.array([-0.0127, 0.211])],
+[np.array([-0.0533, 0.1933]), np.array([-0.0487, 0.197]), np.array([-0.0157, 0.2027]), np.array([-0.003, 0.2027]), np.array([0.005, 0.2])],
+[np.array([0.288, 0.3147]), np.array([0.3053, 0.311]), np.array([0.4327, 0.329]), np.array([0.4463, 0.3287]), np.array([0.4543, 0.3263])],
+[np.array([0.3193, 0.3573]), np.array([0.3333, 0.3437]), np.array([0.334, 0.3407]), np.array([0.3407, 0.2743]), np.array([0.3363, 0.2687])],
+[np.array([0.4003, 0.373]), np.array([0.407, 0.3667]), np.array([0.4123, 0.3573]), np.array([0.397, 0.28]), np.array([0.3903, 0.2737])],
+[np.array([0.2357, 0.2513]), np.array([0.2547, 0.2477]), np.array([0.3467, 0.2607]), np.array([0.474, 0.2717]), np.array([0.492, 0.2693]), np.array([0.5053, 0.264])],
+[np.array([0.2913, 0.226]), np.array([0.302, 0.217]), np.array([0.3197, 0.145])],
+[np.array([0.3113, 0.224]), np.array([0.3167, 0.2207]), np.array([0.4097, 0.2343]), np.array([0.4287, 0.2323]), np.array([0.439, 0.2197]), np.array([0.431, 0.1997]), np.array([0.417, 0.152])],
+[np.array([0.332, 0.1903]), np.array([0.3837, 0.1977]), np.array([0.401, 0.196])],
+[np.array([0.356, 0.253]), np.array([0.3647, 0.248]), np.array([0.368, 0.2393]), np.array([0.367, 0.1693]), np.array([0.3617, 0.1623])],
+[np.array([0.326, 0.148]), np.array([0.3323, 0.1513]), np.array([0.4027, 0.1597]), np.array([0.409, 0.162])],
+[np.array([0.3463, 0.1247]), np.array([0.3337, 0.1247]), np.array([0.3197, 0.112]), np.array([0.299, 0.0983]), np.array([0.2667, 0.085])],
+[np.array([0.3993, 0.1337]), np.array([0.4383, 0.1087]), np.array([0.449, 0.0967]), np.array([0.4537, 0.086])],
 ]
+
+# Initialize joint configuration
+init_qpos = np.array([0.6353559, -1.28588984, 2.14838487, -2.61087434, -1.5903009, -0.06818645])
+
+data.qpos[:] = init_qpos
+cur_q_pos = init_qpos.copy()
 
 # 构建完整轨迹：包含抬笔、落笔、书写、再抬笔
 trajectory = []
 z_write = 0.1   # 书写高度
-z_lift = 0.2    # 抬笔高度
+z_lift = 0.15    # 抬笔高度
 
 for i, stroke in enumerate(strokes):
     # 每个 stroke 为可变长度的点列表：[(x0,y0), (x1,y1), ..., (xn,yn)]
@@ -258,7 +278,7 @@ final_q = np.array([0.0,-2.32,-1.38,-2.45,1.57,0.0])
 while not glfw.window_should_close(window):
     time_prev = data.time
 
-    while (data.time - time_prev < 1.0/60.0):
+    while (data.time - time_prev < 0.1):
         # Store trajectory
         mj_end_eff_pos = data.site_xpos[0]
         # Pen-down detection: allow small tolerance around z_write to avoid false breaks
@@ -308,7 +328,7 @@ while not glfw.window_should_close(window):
         else:
             data.ctrl[:] = final_q
         mj.mj_step(model, data)
-        data.time += 0.02
+        data.time += 0.01 #datatime是模拟时间，需要手动更新，与控制频率对应，用来控制模拟速度
 
     if (data.time>=simend):
         break
