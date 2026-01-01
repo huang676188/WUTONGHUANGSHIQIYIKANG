@@ -29,7 +29,7 @@ lasty = 0
 X0=0
 Y0=0.35
 Z0=1.3
-R=2
+R=1.3
 # Helper function
 def PLAY_Z(X0,Y0,Z0,R,X1,Y1):
     Z1_z0_2=R**2-(X1-X0)**2-(Y1-Y0)**2
@@ -201,25 +201,19 @@ strokes = [[np.array([0.2053, 0.3497]), np.array([0.219, 0.3337]), np.array([0.2
 ]
 '''
 strokes = [
-    # 1. 大写 W 笔画 (一笔完成，标准双V型，无断点)
-    [np.array([0.18, 0.38]), np.array([0.20, 0.30]), np.array([0.22, 0.38]), np.array([0.24, 0.30]), np.array([0.26, 0.38])],
-    # 2. 小写 u 笔画 (一笔完成，圆润收尾，衔接W)
-    [np.array([0.27, 0.38]), np.array([0.27, 0.30]), np.array([0.29, 0.30]), np.array([0.31, 0.36])],
-    # 3. 大写 T 笔画 (两笔：先横后竖，标准T型，最协调比例)
-    [np.array([0.32, 0.38]), np.array([0.38, 0.38])],
-    [np.array([0.35, 0.38]), np.array([0.35, 0.28])],
-    # 4. 小写 o 笔画 (一笔闭合圆形，标准正圆，无棱角，最贴合手写体)
-    [np.array([0.39, 0.33]), np.array([0.40, 0.35]), np.array([0.42, 0.35]), np.array([0.43, 0.33]), np.array([0.42, 0.31]), np.array([0.40, 0.31]), np.array([0.39, 0.33])],
-    # 5. 小写 n 笔画 (一笔完成，竖+斜+竖，标准手写n)
-    [np.array([0.44, 0.38]), np.array([0.44, 0.28]), np.array([0.46, 0.28]), np.array([0.46, 0.38])],
-    # 6. 小写 g 笔画 (两笔完成，竖+半圆+下勾，标准手写体，最易识别)
-    [np.array([0.47, 0.38]), np.array([0.47, 0.30])],
-    [np.array([0.47, 0.30]), np.array([0.49, 0.30]), np.array([0.49, 0.32]), np.array([0.47, 0.32]), np.array([0.47, 0.26])]
+[np.array([-0.38,0.55]),np.array([-0.35,0.44]),np.array([-0.31,0.55]),np.array([-0.27,0.43]),np.array([-0.24,0.55])],
+[np.array([-0.21,0.54]),np.array([-0.21,0.46]),np.array([-0.18,0.43]),np.array([-0.16,0.43]),np.array([-0.13,0.46]),np.array([-0.13,0.55])],
+[np.array([-0.1,0.54]),np.array([-0.01,0.54])],
+[np.array([-0.06,0.54]),np.array([-0.05,0.43])],
+[np.array([0.06,0.54]),np.array([0.02,0.53]),np.array([0.01,0.48]),np.array([0.03,0.44]),np.array([0.07,0.43]),np.array([0.1,0.45]),np.array([0.11,0.5]),np.array([0.09,0.53]),np.array([0.06,0.54])],
+[np.array([0.15,0.43]),np.array([0.15,0.54]),np.array([0.23,0.44]),np.array([0.23,0.54])],
+[np.array([0.36,0.52]),np.array([0.32,0.55]),np.array([0.27,0.52]),np.array([0.27,0.47]),np.array([0.31,0.43]),np.array([0.36,0.45])],
+[np.array([0.32,0.49]),np.array([0.36,0.48]),np.array([0.36,0.43])]   
 ]
 # 构建完整轨迹：包含抬笔、落笔、书写、再抬笔
 trajectory = []
 z_write = 0.1   # 书写高度
-z_lift=0  # 抬笔高度
+z_lift=0.3  # 抬笔高度
 
 for i, stroke in enumerate(strokes):
     # 每个 stroke 为可变长度的点列表：[(x0,y0), (x1,y1), ..., (xn,yn)]
@@ -289,7 +283,7 @@ while not glfw.window_should_close(window):
         mj_end_eff_pos = data.site_xpos[0]
         # Pen-down detection: allow small tolerance around z_write to avoid false breaks
         # Use <= z_write + tol instead of hardcoded 0.1 and strict <
-        tol = 1e-2
+        tol = 1e-3
         if (mj_end_eff_pos[2]-PLAY_Z(X0,Y0,Z0,R,mj_end_eff_pos[0],mj_end_eff_pos[1]) <= tol):
             traj_points.append(mj_end_eff_pos.copy())
         if len(traj_points) > MAX_TRAJ:
