@@ -35,7 +35,7 @@ def IK_controller(model, data, X_ref, q_pos):
     mj.mj_jac(model, data, jacp, None, position_Q, 7)
 
     J = jacp.copy()
-    Jinv = np.linalg.pinv(J)
+    Jinv = np.linalg.pinv(J)#计算雅可比矩阵的伪逆
 
     # Reference point
     X = position_Q.copy()
@@ -173,36 +173,47 @@ mj.set_mjcb_control(controller)
 
 
 traj_points = []
-MAX_TRAJ = 5e5  # Maximum number of trajectory points to store
+MAX_TRAJ = 5e6  # Maximum number of trajectory points to store
 LINE_RGBA = np.array([1.0, 0.0, 0.0, 1.0])
 
 ######################################
 ## USER CODE STARTS HERE
 ######################################
-strokes = [[np.array([-0.3947, 0.3497]), np.array([-0.381, 0.3337]), np.array([-0.3683, 0.2797])],
-[np.array([-0.3837, 0.3517]), np.array([-0.382, 0.3493]), np.array([-0.369, 0.346]), np.array([-0.302, 0.3607]), np.array([-0.2863, 0.36]), np.array([-0.275, 0.3493]), np.array([-0.286, 0.318]), np.array([-0.2947, 0.3147])],
-[np.array([-0.3613, 0.286]), np.array([-0.358, 0.2907]), np.array([-0.3003, 0.302]), np.array([-0.283, 0.3027]), np.array([-0.275, 0.3007])],
-[np.array([-0.3963, 0.2463]), np.array([-0.3833, 0.2437]), np.array([-0.3697, 0.2443]), np.array([-0.276, 0.2623]), np.array([-0.2603, 0.262])],
-[np.array([-0.447, 0.187]), np.array([-0.4287, 0.1837]), np.array([-0.379, 0.192]), np.array([-0.2393, 0.2067]), np.array([-0.2223, 0.204]), np.array([-0.21, 0.1997])],
-[np.array([-0.3477, 0.238]), np.array([-0.3347, 0.2293]), np.array([-0.3347, 0.2233]), np.array([-0.3403, 0.189]), np.array([-0.3543, 0.1553]), np.array([-0.3637, 0.1423]), np.array([-0.377, 0.129]), np.array([-0.4013, 0.1147]), np.array([-0.426, 0.105]), np.array([-0.4347, 0.1037])],
-[np.array([-0.3283, 0.1887]), np.array([-0.3243, 0.1807]), np.array([-0.321, 0.179]), np.array([-0.303, 0.1573]), np.array([-0.2807, 0.135]), np.array([-0.2577, 0.116]), np.array([-0.238, 0.109]), np.array([-0.1923, 0.1003])],
-[np.array([-0.1253, 0.3497]), np.array([-0.1143, 0.3377]), np.array([-0.1113, 0.328]), np.array([-0.1097, 0.2737]), np.array([-0.117, 0.176]), np.array([-0.124, 0.1427]), np.array([-0.1243, 0.121])],
-[np.array([-0.1027, 0.343]), np.array([-0.095, 0.3377]), np.array([0.036, 0.3613]), np.array([0.048, 0.357]), np.array([0.0573, 0.3473]), np.array([0.0567, 0.3273]), np.array([0.0637, 0.17]), np.array([0.0627, 0.1307]), np.array([0.057, 0.1167]), np.array([0.0543, 0.1167]), np.array([0.0377, 0.1197]), np.array([0.0083, 0.1307])],
-[np.array([-0.0743, 0.2923]), np.array([-0.071, 0.2907]), np.array([-0.0537, 0.2903]), np.array([-0.0083, 0.301]), np.array([0.0093, 0.3013])],
-[np.array([-0.08, 0.2477]), np.array([-0.0717, 0.2403]), np.array([-0.0697, 0.2353]), np.array([-0.0597, 0.181])],
-[np.array([-0.0613, 0.24]), np.array([-0.0557, 0.2443]), np.array([-0.0197, 0.253]), np.array([-0.0127, 0.2543]), np.array([-0.0047, 0.2517]), np.array([0.0027, 0.2443]), np.array([-0.0057, 0.2163]), np.array([-0.0127, 0.211])],
-[np.array([-0.0533, 0.1933]), np.array([-0.0487, 0.197]), np.array([-0.0157, 0.2027]), np.array([-0.003, 0.2027]), np.array([0.005, 0.2])],
-[np.array([0.288, 0.3147]), np.array([0.3053, 0.311]), np.array([0.4327, 0.329]), np.array([0.4463, 0.3287]), np.array([0.4543, 0.3263])],
-[np.array([0.3193, 0.3573]), np.array([0.3333, 0.3437]), np.array([0.334, 0.3407]), np.array([0.3407, 0.2743]), np.array([0.3363, 0.2687])],
-[np.array([0.4003, 0.373]), np.array([0.407, 0.3667]), np.array([0.4123, 0.3573]), np.array([0.397, 0.28]), np.array([0.3903, 0.2737])],
-[np.array([0.2357, 0.2513]), np.array([0.2547, 0.2477]), np.array([0.3467, 0.2607]), np.array([0.474, 0.2717]), np.array([0.492, 0.2693]), np.array([0.5053, 0.264])],
-[np.array([0.2913, 0.226]), np.array([0.302, 0.217]), np.array([0.3197, 0.145])],
-[np.array([0.3113, 0.224]), np.array([0.3167, 0.2207]), np.array([0.4097, 0.2343]), np.array([0.4287, 0.2323]), np.array([0.439, 0.2197]), np.array([0.431, 0.1997]), np.array([0.417, 0.152])],
-[np.array([0.332, 0.1903]), np.array([0.3837, 0.1977]), np.array([0.401, 0.196])],
-[np.array([0.356, 0.253]), np.array([0.3647, 0.248]), np.array([0.368, 0.2393]), np.array([0.367, 0.1693]), np.array([0.3617, 0.1623])],
-[np.array([0.326, 0.148]), np.array([0.3323, 0.1513]), np.array([0.4027, 0.1597]), np.array([0.409, 0.162])],
-[np.array([0.3463, 0.1247]), np.array([0.3337, 0.1247]), np.array([0.3197, 0.112]), np.array([0.299, 0.0983]), np.array([0.2667, 0.085])],
-[np.array([0.3993, 0.1337]), np.array([0.4383, 0.1087]), np.array([0.449, 0.0967]), np.array([0.4537, 0.086])],
+strokes = [
+[np.array([-0.38,0.55]),np.array([-0.35,0.44]),np.array([-0.31,0.55]),np.array([-0.27,0.43]),np.array([-0.24,0.55])],
+[np.array([-0.21,0.54]),np.array([-0.21,0.46]),np.array([-0.18,0.43]),np.array([-0.16,0.43]),np.array([-0.13,0.46]),np.array([-0.13,0.55])],
+[np.array([-0.1,0.54]),np.array([-0.01,0.54])],
+[np.array([-0.06,0.54]),np.array([-0.05,0.43])],
+[np.array([0.06,0.54]),np.array([0.02,0.53]),np.array([0.01,0.48]),np.array([0.03,0.44]),np.array([0.07,0.43]),np.array([0.1,0.45]),np.array([0.11,0.5]),np.array([0.09,0.53]),np.array([0.06,0.54])],
+[np.array([0.15,0.43]),np.array([0.15,0.54]),np.array([0.23,0.44]),np.array([0.23,0.54])],
+[np.array([0.36,0.52]),np.array([0.32,0.55]),np.array([0.27,0.52]),np.array([0.27,0.47]),np.array([0.31,0.43]),np.array([0.36,0.45])],
+[np.array([0.32,0.49]),np.array([0.36,0.48]),np.array([0.36,0.43])],
+[np.array([-0.2368, 0.2998]), np.array([-0.2286, 0.2902]), np.array([-0.221, 0.2578])],
+[np.array([-0.2302, 0.301]), np.array([-0.2292, 0.2996]), np.array([-0.2214, 0.2976]), np.array([-0.1812, 0.3064]), np.array([-0.1718, 0.306]), np.array([-0.165, 0.2996]), np.array([-0.1716, 0.2808]), np.array([-0.1768, 0.2788])],
+[np.array([-0.2168, 0.2616]), np.array([-0.2148, 0.2644]), np.array([-0.1802, 0.2712]), np.array([-0.1698, 0.2716]), np.array([-0.165, 0.2704])],
+[np.array([-0.2378, 0.2378]), np.array([-0.23, 0.2362]), np.array([-0.2218, 0.2366]), np.array([-0.1656, 0.2474]), np.array([-0.1562, 0.2472])],
+[np.array([-0.2682, 0.2022]), np.array([-0.2572, 0.2002]), np.array([-0.2274, 0.2052]), np.array([-0.1436, 0.214]), np.array([-0.1334, 0.2124]), np.array([-0.126, 0.2098])],
+[np.array([-0.2086, 0.2328]), np.array([-0.2008, 0.2276]), np.array([-0.2008, 0.224]), np.array([-0.2042, 0.2034]), np.array([-0.2126, 0.1832]), np.array([-0.2182, 0.1754]), np.array([-0.2262, 0.1674]), np.array([-0.2408, 0.1588]), np.array([-0.2556, 0.153]), np.array([-0.2608, 0.1522])],
+[np.array([-0.197, 0.2032]), np.array([-0.1946, 0.1984]), np.array([-0.1926, 0.1974]), np.array([-0.1818, 0.1844]), np.array([-0.1684, 0.171]), np.array([-0.1546, 0.1596]), np.array([-0.1428, 0.1554]), np.array([-0.1154, 0.1502])],
+[np.array([-0.0552, 0.2998]), np.array([-0.0486, 0.2926]), np.array([-0.0468, 0.2868]), np.array([-0.0458, 0.2542]), np.array([-0.0502, 0.1956]), np.array([-0.0544, 0.1756]), np.array([-0.0546, 0.1626])],
+[np.array([-0.0416, 0.2958]), np.array([-0.037, 0.2926]), np.array([0.0416, 0.3068]), np.array([0.0488, 0.3042]), np.array([0.0544, 0.2984]), np.array([0.054, 0.2864]), np.array([0.0582, 0.192]), np.array([0.0576, 0.1684]), np.array([0.0542, 0.16]), np.array([0.0526, 0.16]), np.array([0.0426, 0.1618]), np.array([0.025, 0.1684])],
+[np.array([-0.0246, 0.2654]), np.array([-0.0226, 0.2644]), np.array([-0.0122, 0.2642]), np.array([0.015, 0.2706]), np.array([0.0256, 0.2708])],
+[np.array([-0.028, 0.2386]), np.array([-0.023, 0.2342]), np.array([-0.0218, 0.2312]), np.array([-0.0158, 0.1986])],
+[np.array([-0.0168, 0.234]), np.array([-0.0134, 0.2366]), np.array([0.0082, 0.2418]), np.array([0.0124, 0.2426]), np.array([0.0172, 0.241]), np.array([0.0216, 0.2366]), np.array([0.0166, 0.2198]), np.array([0.0124, 0.2166])],
+[np.array([-0.012, 0.206]), np.array([-0.0092, 0.2082]), np.array([0.0106, 0.2116]), np.array([0.0182, 0.2116]), np.array([0.023, 0.21])],
+[np.array([0.2528, 0.2788]), np.array([0.2632, 0.2766]), np.array([0.3396, 0.2874]), np.array([0.3478, 0.2872]), np.array([0.3526, 0.2858])],
+[np.array([0.2716, 0.3044]), np.array([0.28, 0.2962]), np.array([0.2804, 0.2944]), np.array([0.2844, 0.2546]), np.array([0.2818, 0.2512])],
+[np.array([0.3202, 0.3138]), np.array([0.3242, 0.31]), np.array([0.3274, 0.3044]), np.array([0.3182, 0.258]), np.array([0.3142, 0.2542])],
+[np.array([0.2214, 0.2408]), np.array([0.2328, 0.2386]), np.array([0.288, 0.2464]), np.array([0.3644, 0.253]), np.array([0.3752, 0.2516]), np.array([0.3832, 0.2484])],
+[np.array([0.2548, 0.2256]), np.array([0.2612, 0.2202]), np.array([0.2718, 0.177])],
+[np.array([0.2668, 0.2244]), np.array([0.27, 0.2224]), np.array([0.3258, 0.2306]), np.array([0.3372, 0.2294]), np.array([0.3434, 0.2218]), np.array([0.3386, 0.2098]), np.array([0.3302, 0.1812])],
+[np.array([0.2792, 0.2042]), np.array([0.3102, 0.2086]), np.array([0.3206, 0.2076])],
+[np.array([0.2936, 0.2418]), np.array([0.2988, 0.2388]), np.array([0.3008, 0.2336]), np.array([0.3002, 0.1916]), np.array([0.297, 0.1874])],
+#发生什么事了
+[np.array([0.2756, 0.1788]), np.array([0.2794, 0.1808]), np.array([0.3216, 0.1858]), np.array([0.3254, 0.1872])],
+[np.array([0.2878, 0.1648]), np.array([0.2802, 0.1648]), np.array([0.2718, 0.1572]), np.array([0.2594, 0.149]), np.array([0.24, 0.141])],
+[np.array([0.3196, 0.1702]), np.array([0.343, 0.1552]), np.array([0.3494, 0.148]), np.array([0.3522, 0.1416])]
+
 ]
 
 # Initialize joint configuration
@@ -263,8 +274,9 @@ for i in range(len(trajectory) - 1):
     t_seg = dist / speed if dist > 1e-6 else 0.1  # 至少 0.1s 避免除零
     segment_times.append(t_seg)
     segment_points.append((p0, p1))
+#这块代码的作用是将书写轨迹分割成多个线段，并计算每段所需的时间
 
-total_segments = len(segment_points)
+total_segments = len(segment_points) #计算总段数，用于后续判断是否完成书写
 
 point_A = np.array([0.3, 0.1, 0.1])
 point_B = np.array([0.6, 0.6, 0.1])
@@ -277,15 +289,17 @@ final_q = np.array([0.0,-2.32,-1.38,-2.45,1.57,0.0])
 
 while not glfw.window_should_close(window):
     time_prev = data.time
-
-    while (data.time - time_prev < 0.1):
+    count = 0
+    while (data.time - time_prev < 5):
         # Store trajectory
         mj_end_eff_pos = data.site_xpos[0]
         # Pen-down detection: allow small tolerance around z_write to avoid false breaks
         # Use <= z_write + tol instead of hardcoded 0.1 and strict <
         tol = 1e-5
-        if (mj_end_eff_pos[2] <= z_write + tol):
+        count += 1
+        if (mj_end_eff_pos[2] <= z_write + tol and count % 2 == 0):
             traj_points.append(mj_end_eff_pos.copy())
+            count = 0
         if len(traj_points) > MAX_TRAJ:
             traj_points.pop(0)
             
@@ -295,6 +309,14 @@ while not glfw.window_should_close(window):
         ######################################
         ## USER CODE STARTS HERE
         ######################################
+        if np.all(p0 == np.array([0.2936, 0.2418, 0.1])):
+            print("到达倒数第四笔")
+        if np.all(p0 == np.array([0.2756, 0.1788, 0.1])):
+            print("到达倒数第三笔")
+        if np.all(p0 == np.array([0.2878, 0.1648, 0.1])):
+            print("到达倒数第二笔")
+        if np.all(p0 == np.array([0.3196, 0.1702, 0.1])):
+            print("到达最后一笔")
         if current_traj_index >= total_segments:
             X_ref = np.array([0.0, 0.0, 0.2])  # 悬停
         else:
@@ -348,7 +370,7 @@ while not glfw.window_should_close(window):
                        mj.mjtCatBit.mjCAT_ALL.value, scene)
     # Add trajectory as spheres
     for j in range(1, len(traj_points)):
-        if scene.ngeom >= scene.maxgeom:
+        if scene.ngeom >= scene.maxgeom:   #这个值在最开始定义为10000，用来限制最大显示的轨迹点数
             break  # avoid overflow
 
         geom = scene.geoms[scene.ngeom]
