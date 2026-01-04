@@ -201,14 +201,9 @@ strokes = [[np.array([0.2053, 0.3497]), np.array([0.219, 0.3337]), np.array([0.2
 ]
 '''
 strokes = [
-[np.array([-0.38,0.55]),np.array([-0.35,0.44]),np.array([-0.31,0.55]),np.array([-0.27,0.43]),np.array([-0.24,0.55])],
-[np.array([-0.21,0.54]),np.array([-0.21,0.46]),np.array([-0.18,0.43]),np.array([-0.16,0.43]),np.array([-0.13,0.46]),np.array([-0.13,0.55])],
-[np.array([-0.1,0.54]),np.array([-0.01,0.54])],
-[np.array([-0.06,0.54]),np.array([-0.05,0.43])],
-[np.array([0.06,0.54]),np.array([0.02,0.53]),np.array([0.01,0.48]),np.array([0.03,0.44]),np.array([0.07,0.43]),np.array([0.1,0.45]),np.array([0.11,0.5]),np.array([0.09,0.53]),np.array([0.06,0.54])],
-[np.array([0.15,0.43]),np.array([0.15,0.54]),np.array([0.23,0.44]),np.array([0.23,0.54])],
-[np.array([0.36,0.52]),np.array([0.32,0.55]),np.array([0.27,0.52]),np.array([0.27,0.47]),np.array([0.31,0.43]),np.array([0.36,0.45])],
-[np.array([0.32,0.49]),np.array([0.36,0.48]),np.array([0.36,0.43])]   
+[np.array([-0.48,0.5]),np.array([-0.4,0.32]),np.array([-0.32,0.5])],
+[np.array([-0.12,0.5]),np.array([-0.2,0.38]),np.array([-0.08,0.38])],
+[np.array([-0.12,0.5]),np.array([-0.12,0.3])]
 ]
 # 构建完整轨迹：包含抬笔、落笔、书写、再抬笔
 trajectory = []
@@ -311,9 +306,23 @@ while not glfw.window_should_close(window):
                     t_elapsed = 0.0
                     t_seg = segment_times[current_traj_index]
 
-            # 线性插值
+            # 线性插值（但如果是在书写段，则对XY插值后把Z投影到球面）
             alpha = min(1.0, t_elapsed / t_seg) if t_seg > 0 else 1.0
-            X_ref = (1 - alpha) * p0 + alpha * p1
+
+            # 对XY进行线性插值
+            p0_xy = p0[:2]
+            p1_xy = p1[:2]
+            x_interp = (1 - alpha) * p0_xy + alpha * p1_xy
+
+            # 如果两端都不是抬笔高度（即为书写段），则对XY投影到球面计算Z
+            lift_tolerance = 1e-6
+            if (abs(p0[2] - z_lift) > lift_tolerance) and (abs(p1[2] - z_lift) > lift_tolerance):
+                z_interp = PLAY_Z(X0, Y0, Z0, R, x_interp[0], x_interp[1])
+            else:
+                # 抬笔段保持线性插值高度
+                z_interp = (1 - alpha) * p0[2] + alpha * p1[2]
+
+            X_ref = np.array([x_interp[0], x_interp[1], z_interp])
         
         ######################################
         ## USER CODE ENDS HERE
