@@ -201,9 +201,8 @@ strokes = [[np.array([0.2053, 0.3497]), np.array([0.219, 0.3337]), np.array([0.2
 ]
 '''
 strokes = [
-[np.array([-0.48,0.5]),np.array([-0.4,0.32]),np.array([-0.32,0.5])],
-[np.array([-0.12,0.5]),np.array([-0.2,0.38]),np.array([-0.08,0.38])],
-[np.array([-0.12,0.5]),np.array([-0.12,0.3])]
+[np.array([-0.38,0.55]),np.array([0.35,0.44])]
+
 ]
 # 构建完整轨迹：包含抬笔、落笔、书写、再抬笔
 trajectory = []
