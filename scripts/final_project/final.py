@@ -27,6 +27,7 @@ lastx = 0
 lasty = 0
 a=114514
 b=114514114514
+c=78787878
 # Helper function
 def IK_controller(model, data, X_ref, q_pos):
     # Compute Jacobian
