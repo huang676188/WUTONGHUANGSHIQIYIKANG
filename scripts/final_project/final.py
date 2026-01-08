@@ -196,9 +196,9 @@ strokes = [
 [np.array([-0.12,0.5]),np.array([-0.2,0.38]),np.array([-0.08,0.38])],
 [np.array([-0.12,0.5]),np.array([-0.12,0.3])],
 [np.array([0.08,0.42]),np.array([0.12,0.42]),np.array([0.12,0.38]),np.array([0.08,0.38]),np.array([0.08,0.42])],
-[np.array([0.11,0.38]),np.array([0.10,0.37]),np.array([0.09,0.34]),np.array([0.08,0.34])],
-[np.array([0.08,0.34]),np.array([0.09,0.35]),np.array([0.10,0.36]),np.array([0.11,0.37]),np.array([0.12,0.38])],
-[np.array([0.24,0.42]),np.array([0.25,0.41]),np.array([0.26,0.40]),np.array([0.27,0.39]),np.array([0.26,0.38]),np.array([0.25,0.37]),np.array([0.24,0.36]),np.array([0.23,0.37]),np.array([0.22,0.38]),np.array([0.21,0.39]),np.array([0.22,0.40]),np.array([0.23,0.41]),np.array([0.24,0.42])
+[np.array([0.10,0.38]),np.array([0.10,0.36]),np.array([0.08,0.34])],
+[np.array([0.08,0.34]),np.array([0.10,0.35]),np.array([0.12,0.37]),np.array([0.12,0.38])],
+[np.array([0.24,0.42]),np.array([0.26,0.41]),np.array([0.27,0.39]),np.array([0.26,0.37]),np.array([0.24,0.36]),np.array([0.22,0.37]),np.array([0.21,0.39]),np.array([0.22,0.41]),np.array([0.24,0.42])
 ]
 ]
 
