@@ -275,13 +275,14 @@ t_start_segment = 0.0
 segment_times = []
 segment_points = []
 
-for i in range(len(trajectory) - 1):
+for i in range(len(trajectory) - 2):
     p0 = trajectory[i]
     p1 = trajectory[i+1]
+    p2 = trajectory[i+2]
     dist = np.linalg.norm(p1 - p0)
     t_seg = dist / speed if dist > 1e-6 else 0.1  # 至少 0.1s 避免除零
     segment_times.append(t_seg/1.1)
-    segment_points.append((p0, p1))
+    segment_points.append((p0, p1, p2))
 #这块代码的作用是将书写轨迹分割成多个线段，并计算每段所需的时间
 
 total_segments = len(segment_points) #计算总段数，用于后续判断是否完成书写
@@ -317,18 +318,10 @@ while not glfw.window_should_close(window):
         ######################################
         ## USER CODE STARTS HERE
         ######################################
-        if np.all(p0 == np.array([0.2936, 0.2418, 0.1])):
-            print("到达倒数第四笔")
-        if np.all(p0 == np.array([0.2756, 0.1788, 0.1])):
-            print("到达倒数第三笔")
-        if np.all(p0 == np.array([0.2878, 0.1648, 0.1])):
-            print("到达倒数第二笔")
-        if np.all(p0 == np.array([0.3196, 0.1702, 0.1])):
-            print("到达最后一笔")
         if current_traj_index >= total_segments:
             X_ref = np.array([0.0, 0.0, 0.2])  # 悬停
         else:
-            p0, p1 = segment_points[current_traj_index]
+            p0, p1, p2 = segment_points[current_traj_index]
             t_elapsed = data.time- t_start_segment
             t_seg = segment_times[current_traj_index]
 
@@ -337,13 +330,13 @@ while not glfw.window_should_close(window):
                 current_traj_index += 1
                 t_start_segment = data.time
                 if current_traj_index < total_segments:
-                    p0, p1 = segment_points[current_traj_index]
+                    p0, p1, p2 = segment_points[current_traj_index]
                     t_elapsed = 0.0
                     t_seg = segment_times[current_traj_index]
 
             # 线性插值
             alpha = min(1.0, t_elapsed / t_seg) if t_seg > 0 else 1.0
-            X_ref = (1 - alpha) * p0 + alpha * p1
+            X_ref = (1 - 2*alpha + alpha*alpha) * p0 + 2*(alpha - alpha*alpha) * p1 +alpha*alpha*p2
         
         ######################################
         ## USER CODE ENDS HERE
