@@ -28,8 +28,8 @@ lastx = 0
 lasty = 0
 X0=0
 Y0=0.35
-Z0=1.3
-R=1.3
+Z0=100.1
+R=100
 # Helper function
 def PLAY_Z(X0,Y0,Z0,R,X1,Y1):
     Z1_z0_2=R**2-(X1-X0)**2-(Y1-Y0)**2
@@ -179,7 +179,7 @@ init_controller(model,data)
 mj.set_mjcb_control(controller)
 
 # Initialize joint configuration
-init_qpos = np.array([-1.6353559, -1.28588984, 2.14838487, -2.61087434, -1.5903009, -0.06818645])
+init_qpos = np.array([0.6353559, -1.28588984, 2.14838487, -2.61087434, -1.5903009, -0.06818645])
 data.qpos[:] = init_qpos
 cur_q_pos = init_qpos.copy()
 
@@ -261,7 +261,7 @@ total_segments = len(segment_points)
 point_A = np.array([0.3, 0.1, 0.1])
 point_B = np.array([0.6, 0.6, 0.1])
 duration_A = 1
-duration_B = 200
+duration_B = sum(segment_times)+1
 final_q = np.array([0.0,-2.32,-1.38,-2.45,1.57,0.0])
 ######################################
 ## USER CODE ENDS HERE
@@ -270,7 +270,7 @@ final_q = np.array([0.0,-2.32,-1.38,-2.45,1.57,0.0])
 while not glfw.window_should_close(window):
     time_prev = data.time
 
-    while (data.time - time_prev < 0.5):
+    while (data.time - time_prev < 2):
         # Store trajectory
         mj_end_eff_pos = data.site_xpos[0]
         # Pen-down detection: allow small tolerance around z_write to avoid false breaks
